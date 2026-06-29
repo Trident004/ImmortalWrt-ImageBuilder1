@@ -59,6 +59,9 @@ for url in "${CUSTOM_APKS[@]}"; do
     wget -q -P /home/build/immortalwrt/packages/ "$url"
 done
 
+# 🌟 核心修复补丁：将 GitHub 错误转义的 . 号手动改回原生支持的 ~ 号
+mv /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044~f2b69d3.apk
+
 # 让 ImageBuilder 重新生成本地软件源索引 (确保 APK 被系统识别)
 make package_index
 echo "✅ 自定义 APK 下载并索引完成！"
@@ -92,6 +95,8 @@ PACKAGES="$PACKAGES luci-app-store"
 PACKAGES="$PACKAGES luci-lib-taskd"
 PACKAGES="$PACKAGES luci-lib-xterm"
 PACKAGES="$PACKAGES taskd"
+
+# 强烈建议补充 luci-compat，确保 iStore 旧版界面能正常挂载到 LuCI 菜单
 # ====================================================================
 
 # ======== shell/apk-custom-packages.sh =======
