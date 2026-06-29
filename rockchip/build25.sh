@@ -40,10 +40,40 @@ else
   ls -lah /home/build/immortalwrt/packages/
 fi
 
+
+
+# ================== 🌟 新增：注入自定义编译的 APK 资产 🌟 ==================
+echo "$(date '+%Y-%m-%d %H:%M:%S') - 📥 正在下载自定义编译的 APK 组件..."
+mkdir -p /home/build/immortalwrt/packages/
+
+# 定义专属 APK 下载直链 (已剔除重复项)
+CUSTOM_APKS=(
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-app-quickstart-0.12.7-r1.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-app-store-0.2.0-r3.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-lib-taskd-1.0.25.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-lib-xterm-4.18.0.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/quickstart-0.13.0-r1.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/taskd-1.0.3-r2.apk"
+)
+
+# 循环静默下载到 ImageBuilder 的本地安装包池
+for url in "${CUSTOM_APKS[@]}"; do
+    echo "下载: $(basename "$url")"
+    wget -q -P /home/build/immortalwrt/packages/ "$url"
+done
+
+# 🌟 核心修复补丁：将 GitHub 错误转义的 . 号手动改回原生支持的 ~ 号
+mv /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044~f2b69d3.apk
+
+# 让 ImageBuilder 重新生成本地软件源索引 (确保 APK 被系统识别)
+make package_index
+echo "✅ 自定义 APK 下载并索引完成！"
+# ====================================================================
+
 # 输出调试信息
 echo "$(date '+%Y-%m-%d %H:%M:%S') - 开始构建固件..."
-echo "查看repositories信息——————"
-cat repositories
+# ============= imm仓库内的插件==============
 # 定义所需安装的包列表 下列插件你都可以自行删减
 PACKAGES=""
 PACKAGES="$PACKAGES curl"
@@ -55,6 +85,9 @@ PACKAGES="$PACKAGES luci-theme-argon"
 PACKAGES="$PACKAGES luci-app-argon-config"
 PACKAGES="$PACKAGES luci-i18n-argon-config-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
+
+
+
 # 判断是否需要编译 Docker 插件
 if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
@@ -63,6 +96,18 @@ fi
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # ======== shell/custom-packages.sh =======
+# ================= 🌟 声明打包刚刚下载的自定义组件 🌟 =================
+PACKAGES="$PACKAGES luci-app-quickstart"
+PACKAGES="$PACKAGES luci-i18n-quickstart-zh-cn"
+PACKAGES="$PACKAGES quickstart"
+
+PACKAGES="$PACKAGES luci-app-store"
+PACKAGES="$PACKAGES luci-lib-taskd"
+PACKAGES="$PACKAGES luci-lib-xterm"
+PACKAGES="$PACKAGES taskd"
+
+# 强烈建议补充 luci-compat，确保 iStore 旧版界面能正常挂载到 LuCI 菜单
+# ====================================================================
 # 合并imm仓库以外的第三方插件
 PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
 
@@ -70,41 +115,8 @@ PACKAGES="$PACKAGES $CUSTOM_PACKAGES"
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Building image with the following packages:"
 echo "$PACKAGES"
 
-# 若构建openclash 则添加内核
-if echo "$PACKAGES" | grep -q "luci-app-openclash"; then
-    echo "✅ 已选择 luci-app-openclash，添加 openclash core"
-    mkdir -p files/etc/openclash/core
-    # Download clash_meta
-    META_URL="https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz"
-    wget -qO- $META_URL | tar xOvz > files/etc/openclash/core/clash_meta
-    chmod +x files/etc/openclash/core/clash_meta
-    # Download GeoIP and GeoSite
-    wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -O files/etc/openclash/GeoIP.dat
-    wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat -O files/etc/openclash/GeoSite.dat
-    # Download latest openclash Client
-    URL=$(curl -s https://api.github.com/repos/vernesong/OpenClash/releases/latest \
-      | grep "browser_download_url.*apk" \
-      | head -n1 \
-      | cut -d '"' -f 4)
-    echo "OpenClash latest apk: $URL"
-    wget "$URL" -P /home/build/immortalwrt/packages/
-else
-    echo "⚪️ 未选择 luci-app-openclash"
-fi
 
-if echo "$PACKAGES" | grep -q "luci-app-ssr-plus"; then
-    echo "✅ 已选择 luci-app-ssr-plus，添加 mihomo core"
-    mkdir -p files/usr/bin
-    # Download mihomo
-    MIHOMO_URL="https://github.com/MetaCubeX/mihomo/releases/download/v1.19.24/mihomo-linux-arm64-v1.19.24.gz"
-    mkdir -p files/usr/bin
-    wget -qO- "$MIHOMO_URL" | gzip -dc > files/usr/bin/mihomo
-    chmod +x files/usr/bin/mihomo
-    echo "✅ 已下载 mihomo core"
-    ls -lah files/usr/bin
-else
-    echo "⚪️ 未选择 luci-app-ssr-plus"
-fi
+
 
 
 make image PROFILE=$PROFILE PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" ROOTFS_PARTSIZE=$ROOTFS_PARTSIZE
