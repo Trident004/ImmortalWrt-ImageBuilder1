@@ -55,6 +55,9 @@ CUSTOM_APKS=(
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-lib-xterm-4.18.0.apk"
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/quickstart-0.13.0-r1.apk"
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/taskd-1.0.3-r2.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/dae-2026.06.14-r5-aarch64_generic.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/daed-2026.06.14-r6-aarch64_generic.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/luci-app-daede-1.14.7-r4-aarch64_generic.apk"
 )
 
 # 循环静默下载到 ImageBuilder 的本地安装包池
@@ -65,6 +68,11 @@ done
 
 # 🌟 核心修复补丁：将 GitHub 错误转义的 . 号手动改回原生支持的 ~ 号
 mv /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044~f2b69d3.apk
+
+# 🌟 修复 2：去除 daede 组件中多余的 -x86_64 架构后缀，对齐包内部版本号
+mv /home/build/immortalwrt/packages/dae-2026.06.14-r5-aarch64_generic.apk /home/build/immortalwrt/packages/dae-2026.06.14-r5.apk
+mv /home/build/immortalwrt/packages/daed-2026.06.14-r6-aarch64_generic.apk /home/build/immortalwrt/packages/daed-2026.06.14-r6.apk
+mv /home/build/immortalwrt/packages/luci-app-daede-1.14.7-r4-aarch64_generic.apk /home/build/immortalwrt/packages/luci-app-daede-1.14.7-r4.apk
 
 
 # 让 ImageBuilder 重新生成本地软件源索引 (确保 APK 被系统识别)
@@ -112,6 +120,9 @@ PACKAGES="$PACKAGES luci-lib-taskd"
 PACKAGES="$PACKAGES luci-lib-xterm"
 PACKAGES="$PACKAGES taskd"
 
+PACKAGES="$PACKAGES dae"
+PACKAGES="$PACKAGES daed"
+PACKAGES="$PACKAGES luci-app-daede"
 # 强烈建议补充 luci-compat，确保 iStore 旧版界面能正常挂载到 LuCI 菜单
 # ====================================================================
 # 合并imm仓库以外的第三方插件
