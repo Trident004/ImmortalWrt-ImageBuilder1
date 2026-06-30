@@ -48,13 +48,13 @@ mkdir -p /home/build/immortalwrt/packages/
 
 # 定义专属 APK 下载直链 (已剔除重复项)
 CUSTOM_APKS=(
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-app-quickstart-0.12.7-r1.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-app-store-0.2.0-r3.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-lib-taskd-1.0.25.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/luci-lib-xterm-4.18.0.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/quickstart-0.13.0-r1.apk"
-    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28369299848-1/taskd-1.0.3-r2.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-app-quickstart-0.12.7-r1.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-app-store-0.2.0-r3.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-lib-taskd-1.0.25.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-lib-xterm-4.18.0.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/quickstart-0.13.0-r1.apk"
+    "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/taskd-1.0.3-r2.apk"
 )
 
 # 循环静默下载到 ImageBuilder 的本地安装包池
@@ -65,6 +65,7 @@ done
 
 # 🌟 核心修复补丁：将 GitHub 错误转义的 . 号手动改回原生支持的 ~ 号
 mv /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044.f2b69d3.apk /home/build/immortalwrt/packages/luci-i18n-quickstart-zh-cn-26.176.34044~f2b69d3.apk
+
 
 # 让 ImageBuilder 重新生成本地软件源索引 (确保 APK 被系统识别)
 make package_index
@@ -95,6 +96,11 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
 fi
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
+
+#GEO 基础工具包
+PACKAGES="$PACKAGES v2ray-geoip"
+PACKAGES="$PACKAGES v2ray-geosite"
+
 # ======== shell/custom-packages.sh =======
 # ================= 🌟 声明打包刚刚下载的自定义组件 🌟 =================
 PACKAGES="$PACKAGES luci-app-quickstart"
