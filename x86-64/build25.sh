@@ -127,7 +127,6 @@ PACKAGES="$PACKAGES daed"
 PACKAGES="$PACKAGES luci-app-daede"
 
 # 强烈建议补充 luci-compat，确保 iStore 旧版界面能正常挂载到 LuCI 菜单
-PACKAGES="$PACKAGES luci-compat"
 # ====================================================================
 
 # ======== shell/apk-custom-packages.sh =======
