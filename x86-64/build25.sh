@@ -51,6 +51,9 @@ CUSTOM_APKS=(
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/luci-lib-xterm-4.18.0.apk"
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/quickstart-0.13.0-r1.apk"
     "https://github.com/ShimizuKawasaki/nas-packages-luci-actions/releases/download/auto-build-28368922170-1/taskd-1.0.3-r2.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/dae-2026.06.14-r5-x86_64.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/daed-2026.06.14-r6-x86_64.apk"
+    "https://github.com/kenzok8/openwrt-daede/releases/download/v2026.06.29.1/luci-app-daede-1.14.7-r4-x86_64.apk"
 )
 
 # 循环静默下载到 ImageBuilder 的本地安装包池
@@ -99,6 +102,10 @@ PACKAGES="$PACKAGES luci-app-store"
 PACKAGES="$PACKAGES luci-lib-taskd"
 PACKAGES="$PACKAGES luci-lib-xterm"
 PACKAGES="$PACKAGES taskd"
+
+PACKAGES="$PACKAGES dae"
+PACKAGES="$PACKAGES daed"
+PACKAGES="$PACKAGES luci-app-daede"
 
 # 强烈建议补充 luci-compat，确保 iStore 旧版界面能正常挂载到 LuCI 菜单
 # ====================================================================
