@@ -86,6 +86,10 @@ PACKAGES="$PACKAGES luci-i18n-ttyd-zh-cn"
 PACKAGES="$PACKAGES openssh-sftp-server"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 
+#GEO 基础工具包
+PACKAGES="$PACKAGES v2ray-geoip"
+PACKAGES="$PACKAGES v2ray-geosite"
+
 # ================= 🌟 声明打包刚刚下载的自定义组件 🌟 =================
 PACKAGES="$PACKAGES luci-app-quickstart"
 PACKAGES="$PACKAGES luci-i18n-quickstart-zh-cn"
